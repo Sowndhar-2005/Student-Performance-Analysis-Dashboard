@@ -1,7 +1,7 @@
 # 🎓 Student Performance Analysis Dashboard
 
 <p align="center">
-  <img src="assets/banner.png" alt="Student Performance Dashboard Banner" width="100%"/>
+  <img src="assets/banner.png" alt="Student Performance Dashboard Banner" width="90%"/>
 </p>
 
 <p align="center">
@@ -180,6 +180,7 @@ streamlit run app.py
 
 ---
 
+<<<<<<< HEAD
 ## 📝 About This Project
 
 This project is a **Student Performance Analysis Dashboard** — a data science web application that helps you understand how study habits and attendance affect a student's exam marks.
@@ -209,6 +210,8 @@ Even at maximum Study Hours and Attendance, the model predicts ~86 — not 100. 
 
 ---
 
+=======
+>>>>>>> 5ddf8435d580f054cd10de9b5f49c2277caebc16
 <p align="center">
   Built with ❤️ for <strong>Foundations of Data Science</strong> · College Submission Project
 </p>
