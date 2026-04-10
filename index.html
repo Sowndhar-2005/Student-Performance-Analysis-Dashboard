@@ -1,0 +1,668 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>B23ADT302 – Foundations of Data Science</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0d0e14;--bg2:#14161f;--bg3:#1c1f2b;
+  --border:rgba(255,255,255,.08);
+  --text:#e0e2f0;--muted:#7a7f9a;
+  --accent:#6c63ff;--green:#22c55e;--amber:#f59e0b;--rose:#f43f5e;
+  --radius:12px;--font:'Inter',sans-serif;--mono:'JetBrains Mono',monospace;
+}
+body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:100vh;display:flex;flex-direction:column;}
+::-webkit-scrollbar{width:4px;height:4px}
+::-webkit-scrollbar-thumb{background:rgba(255,255,255,.1);border-radius:99px}
+
+/* ─── HEADER ─── */
+header{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:14px 24px;
+  border-bottom:1px solid var(--border);
+  background:var(--bg2);
+  position:sticky;top:0;z-index:10;
+}
+.brand{display:flex;flex-direction:column;gap:2px;}
+.brand h1{font-size:.95rem;font-weight:700;color:#fff;}
+.brand span{font-size:.72rem;color:var(--muted);}
+.status{display:flex;align-items:center;gap:7px;font-size:.75rem;color:var(--muted);}
+.dot{width:7px;height:7px;border-radius:50%;background:var(--green);animation:pulse 2.5s infinite;}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+
+/* ─── LAYOUT ─── */
+.layout{display:flex;flex:1;height:calc(100vh - 57px);}
+
+/* ─── LEFT PANEL (data input) ─── */
+.panel-left{
+  width:320px;min-width:280px;
+  border-right:1px solid var(--border);
+  display:flex;flex-direction:column;
+  background:var(--bg2);
+}
+.panel-section{padding:14px 16px;border-bottom:1px solid var(--border);}
+.panel-label{font-size:.7rem;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px;}
+
+textarea#csv-input{
+  width:100%;height:180px;
+  background:var(--bg3);
+  border:1px solid var(--border);
+  color:var(--text);
+  font-family:var(--mono);font-size:.75rem;
+  padding:10px;border-radius:8px;
+  resize:vertical;outline:none;
+  line-height:1.6;
+  transition:border-color .2s;
+}
+textarea#csv-input:focus{border-color:var(--accent);}
+textarea#csv-input::placeholder{color:var(--muted);}
+
+.btn{
+  width:100%;padding:9px;margin-top:8px;
+  background:var(--accent);color:#fff;
+  border:none;border-radius:8px;
+  font-family:var(--font);font-size:.82rem;font-weight:600;
+  cursor:pointer;transition:all .2s;
+}
+.btn:hover{opacity:.85;transform:translateY(-1px);}
+.btn.outline{background:transparent;border:1px solid var(--border);color:var(--text);}
+.btn.outline:hover{border-color:var(--accent);color:var(--accent);}
+
+/* columns list */
+#col-list{display:flex;flex-direction:column;gap:6px;overflow-y:auto;max-height:220px;padding:2px 4px 2px 0;}
+.col-item{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:7px 10px;
+  background:var(--bg3);border-radius:7px;
+  font-size:.78rem;cursor:pointer;
+  border:1px solid transparent;
+  transition:border-color .15s;
+}
+.col-item:hover{border-color:var(--border);}
+.col-item.sel{border-color:var(--accent);background:rgba(108,99,255,.1);}
+.col-type{font-size:.65rem;color:var(--muted);font-family:var(--mono);}
+
+/* stats mini */
+#data-stats{font-size:.75rem;color:var(--muted);padding:10px 16px;border-bottom:1px solid var(--border);}
+#data-stats span{color:var(--text);font-weight:600;}
+
+/* ─── RIGHT PANEL (chat) ─── */
+.panel-right{flex:1;display:flex;flex-direction:column;overflow:hidden;}
+
+/* messages area */
+#chat-area{
+  flex:1;overflow-y:auto;
+  padding:20px 24px;
+  display:flex;flex-direction:column;gap:16px;
+}
+
+/* welcome */
+.welcome{
+  margin:auto;
+  text-align:center;
+  max-width:440px;
+  color:var(--muted);
+}
+.welcome .icon{font-size:2.8rem;margin-bottom:12px;}
+.welcome h2{font-size:1rem;font-weight:600;color:var(--text);margin-bottom:8px;}
+.welcome p{font-size:.82rem;line-height:1.6;}
+.suggestion-chips{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:14px;}
+.chip{
+  padding:6px 13px;
+  background:var(--bg3);border:1px solid var(--border);
+  border-radius:99px;font-size:.75rem;
+  cursor:pointer;color:var(--text);transition:all .15s;
+}
+.chip:hover{border-color:var(--accent);color:var(--accent);}
+
+/* message bubble */
+.msg{display:flex;flex-direction:column;gap:4px;max-width:100%;}
+.msg.user{align-items:flex-end;}
+.msg.bot{align-items:flex-start;}
+.msg-bubble{
+  padding:10px 14px;border-radius:10px;
+  font-size:.83rem;line-height:1.55;max-width:80%;
+}
+.msg.user .msg-bubble{background:rgba(108,99,255,.2);border:1px solid rgba(108,99,255,.3);color:#fff;}
+.msg.bot .msg-bubble{background:var(--bg2);border:1px solid var(--border);color:var(--text);}
+.msg-time{font-size:.65rem;color:var(--muted);}
+
+/* chart card */
+.chart-card{
+  background:var(--bg2);border:1px solid var(--border);
+  border-radius:var(--radius);padding:16px;
+  width:100%;
+}
+.chart-card h3{font-size:.82rem;font-weight:600;margin-bottom:12px;color:var(--text);}
+.chart-card canvas{display:block;max-height:280px;}
+
+/* stats card */
+.stats-row{display:flex;flex-wrap:wrap;gap:10px;width:100%;}
+.stat-box{
+  flex:1;min-width:100px;
+  background:var(--bg3);border:1px solid var(--border);
+  border-radius:9px;padding:12px 14px;
+}
+.stat-label{font-size:.65rem;color:var(--muted);text-transform:uppercase;letter-spacing:.4px;margin-bottom:4px;}
+.stat-value{font-size:1.2rem;font-weight:700;font-family:var(--mono);}
+
+/* error */
+.error-msg{color:var(--rose);font-size:.78rem;padding:8px 12px;background:rgba(244,63,94,.1);border-radius:7px;border:1px solid rgba(244,63,94,.2);}
+
+/* ─── INPUT BAR ─── */
+.input-bar{
+  padding:12px 16px;
+  border-top:1px solid var(--border);
+  background:var(--bg2);
+  display:flex;gap:10px;align-items:flex-end;
+}
+#msg-input{
+  flex:1;
+  background:var(--bg3);
+  border:1px solid var(--border);
+  color:var(--text);
+  font-family:var(--font);font-size:.85rem;
+  padding:9px 14px;border-radius:8px;
+  outline:none;resize:none;
+  min-height:40px;max-height:100px;
+  transition:border-color .2s;
+  line-height:1.5;
+}
+#msg-input:focus{border-color:var(--accent);}
+#send-btn{
+  width:40px;height:40px;
+  background:var(--accent);border:none;border-radius:8px;
+  cursor:pointer;color:#fff;
+  display:grid;place-items:center;
+  transition:all .2s;flex-shrink:0;
+}
+#send-btn:hover{opacity:.85;}
+#send-btn svg{width:18px;height:18px;}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="brand">
+    <h1>B23ADT302 — Foundations of Data Science</h1>
+    <span>Data Visualization &amp; Analysis Tool</span>
+  </div>
+  <div class="status"><div class="dot"></div>Ready</div>
+</header>
+
+<div class="layout">
+
+  <!-- LEFT: Data Input -->
+  <aside class="panel-left">
+    <div class="panel-section">
+      <div class="panel-label">Paste CSV Data</div>
+      <textarea id="csv-input" placeholder="name,age,score,grade&#10;Alice,20,88,A&#10;Bob,22,74,B&#10;Carol,21,91,A&#10;David,23,65,C&#10;Eve,20,79,B"></textarea>
+      <button class="btn" id="btn-load">Load Data →</button>
+      <button class="btn outline" id="btn-sample" style="margin-top:6px">Use Sample Dataset</button>
+    </div>
+
+    <div id="data-stats" style="display:none">
+      <span id="stat-rows">0</span> rows · <span id="stat-cols">0</span> columns loaded
+    </div>
+
+    <div class="panel-section" style="flex:1;overflow:hidden;display:flex;flex-direction:column;">
+      <div class="panel-label">Columns</div>
+      <div id="col-list"><span style="font-size:.75rem;color:var(--muted)">Load data first</span></div>
+    </div>
+  </aside>
+
+  <!-- RIGHT: Chat -->
+  <div class="panel-right">
+    <div id="chat-area">
+      <div class="welcome" id="welcome">
+        <div class="icon">📊</div>
+        <h2>Ask anything about your data</h2>
+        <p>Paste CSV data on the left, then ask a question. I'll create charts and statistics instantly.</p>
+        <div class="suggestion-chips">
+          <div class="chip" data-q="Show bar chart of score">Bar chart of score</div>
+          <div class="chip" data-q="Show histogram of age">Histogram of age</div>
+          <div class="chip" data-q="Show pie chart of grade">Pie chart of grade</div>
+          <div class="chip" data-q="Show statistics of score">Statistics of score</div>
+          <div class="chip" data-q="Show line chart of score">Line chart of score</div>
+          <div class="chip" data-q="Compare score by grade">Compare score by grade</div>
+        </div>
+      </div>
+    </div>
+    <div class="input-bar">
+      <textarea id="msg-input" rows="1" placeholder="Ask: Show bar chart of score… or: Statistics of age…"></textarea>
+      <button id="send-btn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+          <line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/>
+        </svg>
+      </button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ─────────────────────────────────────────────
+//  State
+// ─────────────────────────────────────────────
+let DATA = [];          // array of objects
+let HEADERS = [];       // column names
+let TYPES = {};         // col → 'num' | 'cat'
+
+Chart.defaults.color = '#7a7f9a';
+Chart.defaults.borderColor = 'rgba(255,255,255,.06)';
+Chart.defaults.font.family = 'Inter, sans-serif';
+
+const PAL = ['#6c63ff','#22c55e','#f59e0b','#06b6d4','#f43f5e','#8b5cf6','#fb923c','#10b981'];
+
+// ─────────────────────────────────────────────
+//  CSV Parser
+// ─────────────────────────────────────────────
+function parseCSV(text) {
+  const lines = text.trim().split('\n').map(l => l.trim()).filter(Boolean);
+  if (lines.length < 2) throw new Error('Need at least 2 rows (header + data)');
+  const headers = lines[0].split(',').map(h => h.trim());
+  const rows = lines.slice(1).map(line => {
+    const vals = line.split(',').map(v => v.trim());
+    const obj = {};
+    headers.forEach((h, i) => { obj[h] = vals[i] ?? ''; });
+    return obj;
+  });
+  return { headers, rows };
+}
+
+function inferTypes(headers, rows) {
+  const types = {};
+  headers.forEach(h => {
+    const nums = rows.map(r => parseFloat(r[h])).filter(v => !isNaN(v));
+    types[h] = (nums.length / rows.length) >= 0.7 ? 'num' : 'cat';
+  });
+  return types;
+}
+
+// ─────────────────────────────────────────────
+//  Load Data
+// ─────────────────────────────────────────────
+function loadData(csv) {
+  try {
+    const { headers, rows } = parseCSV(csv);
+    HEADERS = headers;
+    DATA = rows;
+    TYPES = inferTypes(headers, rows);
+    renderColList();
+    document.getElementById('data-stats').style.display = 'block';
+    document.getElementById('stat-rows').textContent = rows.length;
+    document.getElementById('stat-cols').textContent = headers.length;
+    addBotMsg(`✅ Loaded **${rows.length} rows** and **${headers.length} columns**: ${headers.join(', ')}. Now ask me to visualize!`);
+  } catch(e) {
+    addBotMsg(`<span class="error-msg">Error: ${e.message}</span>`);
+  }
+}
+
+function renderColList() {
+  const list = document.getElementById('col-list');
+  list.innerHTML = HEADERS.map(h => `
+    <div class="col-item" data-col="${h}">
+      <span>${h}</span>
+      <span class="col-type">${TYPES[h]}</span>
+    </div>`).join('');
+  list.querySelectorAll('.col-item').forEach(el => {
+    el.addEventListener('click', () => {
+      el.classList.toggle('sel');
+    });
+  });
+}
+
+// ─────────────────────────────────────────────
+//  Sample Dataset
+// ─────────────────────────────────────────────
+const SAMPLE = `name,age,score,grade,study_hours,attendance
+Alice,20,88,A,6,92
+Bob,22,74,B,4,80
+Carol,21,91,A,7,95
+David,23,65,C,3,70
+Eve,20,79,B,5,85
+Frank,22,55,D,2,60
+Grace,21,95,A,8,98
+Henry,23,68,C,3,72
+Iris,20,82,B,5.5,88
+Jack,22,71,B,4,78
+Karen,21,90,A,7,93
+Leo,23,60,C,2.5,65
+Mia,20,85,A,6,90
+Noah,22,73,B,4,82
+Olivia,21,88,A,6.5,91`;
+
+// ─────────────────────────────────────────────
+//  Chat Rendering
+// ─────────────────────────────────────────────
+let chartCount = 0;
+
+function now() {
+  return new Date().toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'});
+}
+
+function hideWelcome() {
+  const w = document.getElementById('welcome');
+  if (w) w.remove();
+}
+
+function addUserMsg(text) {
+  hideWelcome();
+  const area = document.getElementById('chat-area');
+  const div = document.createElement('div');
+  div.className = 'msg user';
+  div.innerHTML = `<div class="msg-bubble">${text}</div><div class="msg-time">${now()}</div>`;
+  area.appendChild(div);
+  area.scrollTop = area.scrollHeight;
+}
+
+function addBotMsg(html) {
+  hideWelcome();
+  const area = document.getElementById('chat-area');
+  const div = document.createElement('div');
+  div.className = 'msg bot';
+  div.innerHTML = `<div class="msg-bubble">${html.replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>')}</div><div class="msg-time">${now()}</div>`;
+  area.appendChild(div);
+  area.scrollTop = area.scrollHeight;
+}
+
+function addChartCard(title, canvasFn) {
+  hideWelcome();
+  const area = document.getElementById('chat-area');
+  const id = 'chart-' + (++chartCount);
+  const div = document.createElement('div');
+  div.className = 'msg bot';
+  div.innerHTML = `
+    <div class="chart-card">
+      <h3>${title}</h3>
+      <canvas id="${id}"></canvas>
+    </div>
+    <div class="msg-time">${now()}</div>`;
+  area.appendChild(div);
+  const ctx = document.getElementById(id).getContext('2d');
+  canvasFn(ctx);
+  area.scrollTop = area.scrollHeight;
+}
+
+function addStatsCard(col) {
+  hideWelcome();
+  const vals = DATA.map(r => parseFloat(r[col])).filter(v => !isNaN(v)).sort((a,b)=>a-b);
+  const mean  = vals.reduce((s,v)=>s+v,0) / vals.length;
+  const med   = vals.length % 2 === 0 ? (vals[vals.length/2-1]+vals[vals.length/2])/2 : vals[Math.floor(vals.length/2)];
+  const std   = Math.sqrt(vals.map(v=>(v-mean)**2).reduce((s,v)=>s+v,0)/vals.length);
+  const stats = [
+    {label:'Count',  value: vals.length},
+    {label:'Mean',   value: mean.toFixed(2)},
+    {label:'Median', value: med.toFixed(2)},
+    {label:'Std Dev',value: std.toFixed(2)},
+    {label:'Min',    value: vals[0]},
+    {label:'Max',    value: vals[vals.length-1]},
+  ];
+  const area = document.getElementById('chat-area');
+  const div  = document.createElement('div');
+  div.className = 'msg bot';
+  div.innerHTML = `
+    <div class="stats-row">
+      ${stats.map(s=>`<div class="stat-box"><div class="stat-label">${s.label}</div><div class="stat-value">${s.value}</div></div>`).join('')}
+    </div>
+    <div class="msg-time">${now()}</div>`;
+  area.appendChild(div);
+  area.scrollTop = area.scrollHeight;
+}
+
+// ─────────────────────────────────────────────
+//  Chart makers
+// ─────────────────────────────────────────────
+function makebar(ctx, labels, values, label) {
+  new Chart(ctx, {
+    type:'bar',
+    data:{
+      labels,
+      datasets:[{label, data:values,
+        backgroundColor:PAL.map(c=>c+'aa'),
+        borderColor:PAL, borderWidth:1.5, borderRadius:5}]
+    },
+    options:{
+      responsive:true,maintainAspectRatio:true,
+      plugins:{legend:{display:false}},
+      scales:{
+        y:{grid:{color:'rgba(255,255,255,.05)'}},
+        x:{grid:{display:false}}
+      }
+    }
+  });
+}
+
+function makeLine(ctx, labels, values, label) {
+  new Chart(ctx, {
+    type:'line',
+    data:{
+      labels,
+      datasets:[{label, data:values,
+        borderColor:PAL[0], backgroundColor:PAL[0]+'22',
+        borderWidth:2, pointRadius:4, pointBackgroundColor:PAL[0], fill:true, tension:.3}]
+    },
+    options:{
+      responsive:true,maintainAspectRatio:true,
+      plugins:{legend:{display:false}},
+      scales:{
+        y:{grid:{color:'rgba(255,255,255,.05)'}},
+        x:{grid:{display:false}}
+      }
+    }
+  });
+}
+
+function makePie(ctx, labels, values) {
+  new Chart(ctx, {
+    type:'doughnut',
+    data:{labels, datasets:[{data:values, backgroundColor:PAL, borderWidth:0}]},
+    options:{
+      responsive:true, maintainAspectRatio:true,
+      plugins:{legend:{position:'right',labels:{boxWidth:12,padding:14}}},
+      cutout:'55%'
+    }
+  });
+}
+
+function makeHistogram(ctx, col) {
+  const vals = DATA.map(r=>parseFloat(r[col])).filter(v=>!isNaN(v));
+  const min=Math.min(...vals), max=Math.max(...vals), bins=10;
+  const size=(max-min)/bins;
+  const counts=new Array(bins).fill(0);
+  const labels=[];
+  for(let i=0;i<bins;i++) labels.push((min+i*size).toFixed(1));
+  vals.forEach(v=>{const idx=Math.min(Math.floor((v-min)/size),bins-1);counts[idx]++;});
+  new Chart(ctx, {
+    type:'bar',
+    data:{labels, datasets:[{label:'Frequency', data:counts,
+      backgroundColor:PAL[2]+'99', borderColor:PAL[2], borderWidth:1.5, borderRadius:4}]},
+    options:{
+      responsive:true, maintainAspectRatio:true,
+      plugins:{legend:{display:false}},
+      scales:{
+        y:{title:{display:true,text:'Count'},grid:{color:'rgba(255,255,255,.05)'}},
+        x:{title:{display:true,text:col},grid:{display:false}}
+      }
+    }
+  });
+}
+
+function makeGroupedBar(ctx, catCol, numCol) {
+  const groups = {};
+  DATA.forEach(r => {
+    const k = r[catCol] ?? 'Unknown';
+    if (!groups[k]) groups[k] = [];
+    const v = parseFloat(r[numCol]);
+    if (!isNaN(v)) groups[k].push(v);
+  });
+  const labels = Object.keys(groups);
+  const means  = labels.map(k => {
+    const arr = groups[k];
+    return (arr.reduce((s,v)=>s+v,0)/arr.length).toFixed(2);
+  });
+  new Chart(ctx, {
+    type:'bar',
+    data:{labels, datasets:[{
+      label:`Avg ${numCol}`, data:means,
+      backgroundColor:PAL.map(c=>c+'bb'),
+      borderColor:PAL, borderWidth:1.5, borderRadius:5
+    }]},
+    options:{
+      responsive:true, maintainAspectRatio:true,
+      plugins:{legend:{display:false}},
+      scales:{
+        y:{grid:{color:'rgba(255,255,255,.05)'}},
+        x:{grid:{display:false}}
+      }
+    }
+  });
+}
+
+// ─────────────────────────────────────────────
+//  Query Engine
+// ─────────────────────────────────────────────
+function processQuery(q) {
+  if (DATA.length === 0) {
+    addBotMsg('⚠️ Please **load your data first** using the panel on the left.');
+    return;
+  }
+  const lower = q.toLowerCase();
+
+  // Find column mentions
+  const foundCols = HEADERS.filter(h => lower.includes(h.toLowerCase()));
+
+  // Keywords
+  const wantBar   = /bar|column/.test(lower);
+  const wantLine  = /line|trend/.test(lower);
+  const wantPie   = /pie|donut|distribution/.test(lower);
+  const wantHist  = /histogram|hist|frequency/.test(lower);
+  const wantStats = /statistic|summary|describe|mean|average|std|min|max/.test(lower);
+  const wantCmp   = /compare|group|by|versus|vs/.test(lower);
+
+  // Stats
+  if (wantStats && foundCols.length > 0) {
+    const col = foundCols[0];
+    if (TYPES[col] === 'num') {
+      addBotMsg(`📊 Statistics for **${col}**:`);
+      addStatsCard(col);
+      return;
+    }
+  }
+
+  // Pie / donut for categorical
+  if (wantPie && foundCols.length > 0) {
+    const col = foundCols[0];
+    const counts = {};
+    DATA.forEach(r => { const k = r[col] || '?'; counts[k] = (counts[k] || 0) + 1; });
+    addBotMsg(`🍩 Distribution of **${col}**:`);
+    addChartCard(`Distribution of "${col}"`, ctx => makePie(ctx, Object.keys(counts), Object.values(counts)));
+    return;
+  }
+
+  // Histogram
+  if (wantHist && foundCols.length > 0) {
+    const col = foundCols.find(c => TYPES[c] === 'num') || foundCols[0];
+    addBotMsg(`📊 Histogram of **${col}**:`);
+    addChartCard(`Histogram of "${col}"`, ctx => makeHistogram(ctx, col));
+    return;
+  }
+
+  // Line chart
+  if (wantLine && foundCols.length > 0) {
+    const col = foundCols.find(c => TYPES[c] === 'num') || foundCols[0];
+    const labels = DATA.map((r, i) => r[HEADERS[0]] || (i + 1));
+    const values = DATA.map(r => parseFloat(r[col]) || 0);
+    addBotMsg(`📈 Line chart of **${col}**:`);
+    addChartCard(`Line Chart – ${col}`, ctx => makeLine(ctx, labels, values, col));
+    return;
+  }
+
+  // Compare: cat col vs num col
+  if (wantCmp && foundCols.length >= 2) {
+    const catCol = foundCols.find(c => TYPES[c] === 'cat');
+    const numCol = foundCols.find(c => TYPES[c] === 'num');
+    if (catCol && numCol) {
+      addBotMsg(`📊 Average **${numCol}** grouped by **${catCol}**:`);
+      addChartCard(`Avg ${numCol} by ${catCol}`, ctx => makeGroupedBar(ctx, catCol, numCol));
+      return;
+    }
+  }
+
+  // Bar chart (default)
+  if ((wantBar || foundCols.length > 0)) {
+    const col = foundCols.find(c => TYPES[c] === 'num') || foundCols[0];
+    if (col) {
+      if (TYPES[col] === 'num') {
+        const labels = DATA.map((r, i) => r[HEADERS[0]] || `Row ${i+1}`);
+        const values = DATA.map(r => parseFloat(r[col]) || 0);
+        addBotMsg(`📊 Bar chart of **${col}**:`);
+        addChartCard(`Bar Chart – ${col}`, ctx => makebar(ctx, labels, values, col));
+      } else {
+        const counts = {};
+        DATA.forEach(r => { const k = r[col] || '?'; counts[k] = (counts[k] || 0) + 1; });
+        addBotMsg(`📊 Count of **${col}**:`);
+        addChartCard(`Count of "${col}"`, ctx => makebar(ctx, Object.keys(counts), Object.values(counts), 'Count'));
+      }
+      return;
+    }
+  }
+
+  // Fallback — list all columns
+  addBotMsg(`I understood your question but wasn't sure which chart to make. Try one of these:\n
+  • <em>Show bar chart of score</em>\n
+  • <em>Show histogram of age</em>\n
+  • <em>Show pie chart of grade</em>\n
+  • <em>Compare score by grade</em>\n
+  • <em>Statistics of score</em>`);
+}
+
+// ─────────────────────────────────────────────
+//  Events
+// ─────────────────────────────────────────────
+document.getElementById('btn-load').addEventListener('click', () => {
+  const csv = document.getElementById('csv-input').value;
+  if (!csv.trim()) { addBotMsg('⚠️ Please paste CSV data first.'); return; }
+  loadData(csv);
+});
+
+document.getElementById('btn-sample').addEventListener('click', () => {
+  document.getElementById('csv-input').value = SAMPLE;
+  loadData(SAMPLE);
+});
+
+document.getElementById('send-btn').addEventListener('click', sendMsg);
+document.getElementById('msg-input').addEventListener('keydown', e => {
+  if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMsg(); }
+});
+
+function sendMsg() {
+  const inp = document.getElementById('msg-input');
+  const q = inp.value.trim();
+  if (!q) return;
+  inp.value = '';
+  inp.style.height = '';
+  addUserMsg(q);
+  setTimeout(() => processQuery(q), 300);
+}
+
+// auto-resize textarea
+document.getElementById('msg-input').addEventListener('input', function() {
+  this.style.height = '';
+  this.style.height = Math.min(this.scrollHeight, 100) + 'px';
+});
+
+// chips
+document.querySelectorAll('.chip').forEach(c => {
+  c.addEventListener('click', () => {
+    document.getElementById('msg-input').value = c.dataset.q;
+    sendMsg();
+  });
+});
+</script>
+</body>
+</html>
