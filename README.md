@@ -180,18 +180,32 @@ streamlit run app.py
 
 ---
 
-## 📝 Section-by-Section Explanation *(for Viva)*
+## 📝 About This Project
 
-1. **Dataset Generation** — `generate_dataset()` uses NumPy to create 200 students with realistic correlations (more study hours → higher marks) + random noise
-2. **Data Cleaning** — `clean_data()` removes duplicates and fills NaN with column median (robust to outliers)
-3. **Sidebar Filters** — `st.multiselect()` lets users narrow data by gender/subject dynamically
-4. **KPI Metrics** — `st.metric()` shows count/mean stats on the filtered subset
-5. **Bar Chart** — `groupby("Subject")["Marks"].mean()` + Matplotlib `ax.bar()`
-6. **Histogram** — `ax.hist()` shows spread of marks with mean line
-7. **Scatter Plot** — Each point = 1 student; color = gender; dashed = trend line
-8. **Heatmap** — Seaborn `heatmap()` on `df.corr()` matrix
-9. **Linear Regression** — `sklearn.LinearRegression` fit on 80% data; MAE + R² evaluations
-10. **Prediction** — Slider inputs → `model.predict()` → grade label (A+ to F)
+This project is a **Student Performance Analysis Dashboard** — a data science web application that helps you understand how study habits and attendance affect a student's exam marks.
+
+### What it does
+
+- **Generates** a realistic dataset of 200 students with fields like Study Hours, Attendance, Subject, Gender, and Marks
+- **Cleans** the data automatically — removes duplicates and fills any missing values
+- **Visualizes** patterns through 4 interactive charts so you can spot trends at a glance
+- **Predicts** a student's expected marks using a Machine Learning model (Linear Regression) trained on the dataset
+- **Filters** all data and charts in real time using the sidebar controls
+
+### How the prediction works
+
+The app trains a **Linear Regression** model using two inputs:
+
+| Input | Description |
+|---|---|
+| `Study_Hours` | How many hours per day the student studies |
+| `Attendance` | The student's class attendance percentage |
+
+The model learns the relationship between these inputs and `Marks` from the training data. When you move the sliders and click **Predict Marks**, it runs `model.predict()` with your values and shows the expected score along with a grade (A+ to F).
+
+### Why the predicted score isn't always 100
+
+Even at maximum Study Hours and Attendance, the model predicts ~86 — not 100. This is because real student data has natural variation (some students with full attendance still score differently), so the regression line finds the realistic average, not the perfect maximum.
 
 ---
 
