@@ -40,27 +40,26 @@ st.markdown("""
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
 html, body, [class*="css"] { font-family: 'Inter', sans-serif; }
 
-/* ── Hide Streamlit top header / Deploy bar ── */
-[data-testid="stHeader"],
+/* ── Hide Streamlit top header / Deploy bar slightly differently to show sidebar button ── */
 header[data-testid="stHeader"] {
-    background: #0f1117 !important;
-    border-bottom: 1px solid #1e2333;
+    background: transparent !important;
 }
-/* Hide Deploy button & toolbar icons ── */
+/* Hide Deploy button & general toolbar icons ── */
 [data-testid="stToolbar"],
 [data-testid="manage-app-button"],
+.stAppDeployButton,
 .stDeployButton { display: none !important; }
 
 /* ── Background ── */
 .stApp { background: #0f1117; color: #e6e6e6; }
 
-/* ── Remove top gap ── */
+/* ── Container gaps ── */
 .block-container {
-    padding-top: 0.5rem !important;
+    padding-top: 1.5rem !important;
     padding-bottom: 1rem !important;
 }
 [data-testid="stSidebarContent"] {
-    padding-top: 0.5rem !important;
+    padding-top: 1rem !important;
 }
 section[data-testid="stSidebar"] > div {
     padding-top: 0.5rem !important;
@@ -243,7 +242,7 @@ def train_model(df: pd.DataFrame):
 def main():
     # ── HEADER ────────────────────────────────────────────────────────
     st.markdown("""
-    <div style='text-align:center; padding: 1.2rem 0 0.4rem;'>
+    <div style='text-align:center; padding: 0.2rem 0 0.2rem;'>
         <span style='font-size:2.8rem;'>🎓</span>
         <h1 style='margin:0; font-size:2rem; font-weight:700;
                    background:linear-gradient(90deg,#7c9cff,#a78bfa);
@@ -320,8 +319,8 @@ def main():
         c1, c2, c3, c4 = st.columns(4)
         c1.metric("Raw Rows",      clean_stats["raw_rows"])
         c2.metric("After Cleaning", clean_stats["clean_rows"])
-        c3.metric("Duplicates Removed", clean_stats["dup_removed"])
-        c4.metric("Missing Values Filled", clean_stats["missing_filled"])
+        c3.markdown(f"<div style='font-size:0.9rem; color:#9aa0b4;'>Duplicates Removed</div><div style='font-size:1.8rem; font-weight:600; color:#ffb700;'>{clean_stats['dup_removed']}</div>", unsafe_allow_html=True)
+        c4.markdown(f"<div style='font-size:0.9rem; color:#9aa0b4;'>Missing Values Filled</div><div style='font-size:1.8rem; font-weight:600; color:#ffb700;'>{clean_stats['missing_filled']}</div>", unsafe_allow_html=True)
         st.dataframe(filtered_df.head(10), use_container_width=True, hide_index=True)
 
     # ── KPI METRICS ────────────────────────────────────────────────────
