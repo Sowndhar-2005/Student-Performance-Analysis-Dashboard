@@ -40,52 +40,63 @@ st.markdown("""
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
 html, body, [class*="css"] { font-family: 'Inter', sans-serif; }
 
-/* ── Hide Streamlit top header / Deploy bar slightly differently to show sidebar button ── */
-header[data-testid="stHeader"] {
+/* ── Streamlit top header ── */
+header[data-testid="stHeader"],
+[data-testid="stHeader"] {
     background: transparent !important;
+    border-bottom: 1px solid rgba(128, 128, 128, 0.2);
 }
+
 /* Hide Deploy button & general toolbar icons ── */
-[data-testid="stToolbar"],
 [data-testid="manage-app-button"],
+[data-testid="stEnableFullScreenButton"],
 .stAppDeployButton,
 .stDeployButton { display: none !important; }
 
 /* ── Background ── */
-.stApp { background: #0f1117; color: #e6e6e6; }
+/* Streamlit natively handles background and text color based on user's theme */
 
 /* ── Container gaps ── */
 .block-container {
-    padding-top: 1.5rem !important;
+    padding-top: 0rem !important;
     padding-bottom: 1rem !important;
 }
 [data-testid="stSidebarContent"] {
-    padding-top: 1rem !important;
+    padding-top: 0rem !important;
+}
+[data-testid="stSidebarHeader"] {
+    display: none !important;
+}
+[data-testid="collapsedControl"] {
+    display: none !important;
+}
+[data-testid="stSidebarNav"] {
+    display: none !important;
 }
 section[data-testid="stSidebar"] > div {
-    padding-top: 0.5rem !important;
+    padding-top: 0rem !important;
 }
 
 /* ── Metric cards ── */
 [data-testid="metric-container"] {
-    background: linear-gradient(135deg, #1e2130, #252a3a);
-    border: 1px solid #2e3347;
+    background: var(--secondary-background-color);
+    border: 1px solid rgba(128, 128, 128, 0.2);
     border-radius: 14px;
     padding: 18px 22px;
-    box-shadow: 0 4px 18px rgba(0,0,0,0.4);
+    box-shadow: 0 4px 14px rgba(0,0,0,0.05);
 }
-[data-testid="metric-container"] label { color: #9aa0b4 !important; font-size: 0.78rem; }
+[data-testid="metric-container"] label { color: var(--text-color) !important; opacity: 0.7; font-size: 0.78rem; }
 [data-testid="metric-container"] [data-testid="metric-value"] {
-    color: #7c9cff !important; font-size: 1.8rem !important; font-weight: 700;
+    color: var(--primary-color, #7c9cff) !important; font-size: 1.8rem !important; font-weight: 700;
 }
 
 /* ── Sidebar ── */
-[data-testid="stSidebar"] { background: #141724; border-right: 1px solid #1e2333; }
-[data-testid="stSidebar"] * { color: #c8cedf; }
+/* Streamlit handles sidebar theme natively */
 
 /* ── Section headings ── */
 .section-title {
-    font-size: 1.15rem; font-weight: 700; color: #7c9cff;
-    border-left: 4px solid #7c9cff; padding-left: 10px;
+    font-size: 1.15rem; font-weight: 700; color: var(--primary-color, #7c9cff);
+    border-left: 4px solid var(--primary-color, #7c9cff); padding-left: 10px;
     margin: 1.4rem 0 0.8rem;
 }
 
@@ -103,16 +114,16 @@ div.stButton > button:hover {
 
 /* ── Prediction result box ── */
 .pred-box {
-    background: linear-gradient(135deg, #1b2340, #23304f);
-    border: 1px solid #3a4f8a;
+    background: var(--secondary-background-color);
+    border: 1px solid var(--primary-color, #7c9cff);
     border-radius: 14px; padding: 24px 28px;
     text-align: center; margin-top: 1rem;
 }
-.pred-value { font-size: 2.5rem; font-weight: 700; color: #7c9cff; }
-.pred-label { font-size: 0.9rem; color: #9aa0b4; margin-top: 4px; }
+.pred-value { font-size: 2.5rem; font-weight: 700; color: var(--primary-color, #7c9cff); }
+.pred-label { font-size: 0.9rem; color: var(--text-color); opacity: 0.7; margin-top: 4px; }
 
 /* ── Dividers ── */
-hr { border-color: #2e3347; }
+hr { border-color: rgba(128, 128, 128, 0.2); }
 </style>
 """, unsafe_allow_html=True)
 
@@ -120,17 +131,20 @@ hr { border-color: #2e3347; }
 # ──────────────────────────────────────────────────────────────────────
 # SECTION 2 ▸ Helper — Matplotlib dark theme wrapper
 # ──────────────────────────────────────────────────────────────────────
-def dark_fig(figsize=(8, 4)):
-    """Return a Matplotlib figure pre-styled for the dark UI."""
+def adaptive_fig(figsize=(8, 4)):
+    """Return a Matplotlib figure styled adaptively for both Light & Dark UI."""
     fig, ax = plt.subplots(figsize=figsize)
-    fig.patch.set_facecolor("#1a1e2c")
-    ax.set_facecolor("#1a1e2c")
-    ax.tick_params(colors="#9aa0b4")
-    ax.xaxis.label.set_color("#9aa0b4")
-    ax.yaxis.label.set_color("#9aa0b4")
-    ax.title.set_color("#c8cedf")
+    fig.patch.set_alpha(0.0)  # Transparent figure background
+    ax.set_facecolor("none")  # Transparent axes background
+    
+    # Use a neutral gray that looks good on both modes
+    gray_color = "#6b7280"
+    ax.tick_params(colors=gray_color)
+    ax.xaxis.label.set_color(gray_color)
+    ax.yaxis.label.set_color(gray_color)
+    ax.title.set_color(gray_color)
     for spine in ax.spines.values():
-        spine.set_edgecolor("#2e3347")
+        spine.set_edgecolor((0.5, 0.5, 0.5, 0.2))
     return fig, ax
 
 
@@ -182,18 +196,20 @@ def generate_dataset(n: int = 200) -> pd.DataFrame:
 # ──────────────────────────────────────────────────────────────────────
 # SECTION 4 ▸ Data Cleaning
 # ──────────────────────────────────────────────────────────────────────
-def clean_data(df: pd.DataFrame) -> tuple[pd.DataFrame, dict]:
+def clean_data(df: pd.DataFrame) -> tuple[pd.DataFrame, dict, pd.DataFrame]:
     """
     Clean the raw dataset:
       1. Remove duplicate rows
       2. Fill missing Marks with column median
-    Returns cleaned DataFrame + a dict of cleaning stats.
+    Returns cleaned DataFrame, a dict of cleaning stats, and a missing mask.
     """
     raw_shape = df.shape
     dup_count = df.duplicated().sum()
     missing_count = df.isnull().sum().sum()
 
     df = df.drop_duplicates().reset_index(drop=True)
+    missing_mask = df.isnull()
+    
     # Fill numeric nulls with their respective median
     num_cols = df.select_dtypes(include=np.number).columns
     for col in num_cols:
@@ -205,7 +221,7 @@ def clean_data(df: pd.DataFrame) -> tuple[pd.DataFrame, dict]:
         "dup_removed"  : int(dup_count),
         "missing_filled": int(missing_count),
     }
-    return df, stats
+    return df, stats, missing_mask
 
 
 # ──────────────────────────────────────────────────────────────────────
@@ -242,19 +258,18 @@ def train_model(df: pd.DataFrame):
 def main():
     # ── HEADER ────────────────────────────────────────────────────────
     st.markdown("""
-    <div style='text-align:center; padding: 0.2rem 0 0.2rem;'>
-        <span style='font-size:2.8rem;'>🎓</span>
-        <h1 style='margin:0; font-size:2rem; font-weight:700;
+    <div style='text-align:center; padding: 0rem 0 0rem;'>
+        <h1 style='margin:0; font-size:2.2rem; font-weight:800;
                    background:linear-gradient(90deg,#7c9cff,#a78bfa);
                    -webkit-background-clip:text; -webkit-text-fill-color:transparent;'>
-            Student Performance Dashboard
+            🎓 Student Performance Dashboard
         </h1>
-        <p style='color:#9aa0b4; margin-top:4px; font-size:0.9rem;'>
+        <p style='color:var(--text-color); opacity:0.7; margin-top:4px; margin-bottom: 0; font-size:0.9rem;'>
             Analyze · Visualize · Predict
         </p>
     </div>
     """, unsafe_allow_html=True)
-    st.divider()
+    st.markdown("<hr style='margin:0.8rem 0;'/>", unsafe_allow_html=True)
 
     # ── SIDEBAR ────────────────────────────────────────────────────────
     with st.sidebar:
@@ -289,7 +304,7 @@ def main():
         raw_df = generate_dataset(200)
 
     # ── DATA CLEANING ──────────────────────────────────────────────────
-    clean_df, clean_stats = clean_data(raw_df.copy())
+    clean_df, clean_stats, missing_mask = clean_data(raw_df.copy())
 
     # ── SIDEBAR FILTERS ────────────────────────────────────────────────
     with st.sidebar:
@@ -321,7 +336,31 @@ def main():
         c2.metric("After Cleaning", clean_stats["clean_rows"])
         c3.markdown(f"<div style='font-size:0.9rem; color:#9aa0b4;'>Duplicates Removed</div><div style='font-size:1.8rem; font-weight:600; color:#ffb700;'>{clean_stats['dup_removed']}</div>", unsafe_allow_html=True)
         c4.markdown(f"<div style='font-size:0.9rem; color:#9aa0b4;'>Missing Values Filled</div><div style='font-size:1.8rem; font-weight:600; color:#ffb700;'>{clean_stats['missing_filled']}</div>", unsafe_allow_html=True)
-        st.dataframe(filtered_df.head(10), use_container_width=True, hide_index=True)
+        
+        st.markdown("<div style='margin-top:10px;'><b>Sample Raw Data (<span style='color:#ff9999'>🟥 Missing</span> | <span style='color:#ffcc00'>🟨 Duplicates</span>)</b></div>", unsafe_allow_html=True)
+        # Highlight Raw Data duplicates and missing values
+        def style_clean_data(d):
+            dup_mask = d.duplicated(keep=False)
+            df_style = pd.DataFrame('', index=d.index, columns=d.columns)
+            # Yellow for duplicates
+            for i in range(len(d)):
+                if dup_mask.iloc[i]:
+                    df_style.iloc[i, :] = 'background-color: #5c4300; color: #ffcc00'
+            # Red for missing
+            for col in d.columns:
+                null_mask = d[col].isna()
+                df_style.loc[null_mask, col] = 'background-color: #5c0000; color: #ff9999'
+            return df_style
+            
+        # Sort raw_df to bring duplicates to the top so they are easily visible
+        raw_df_sorted = raw_df.sort_values(by=list(raw_df.columns), ascending=False)
+        styled_raw = raw_df_sorted.style.apply(style_clean_data, axis=None)
+        
+        # Output dataframe handling the Streamlit container_width warning
+        try:
+            st.dataframe(styled_raw, width="stretch", hide_index=True)
+        except Exception:
+            st.dataframe(styled_raw, use_container_width=True, hide_index=True)
 
     # ── KPI METRICS ────────────────────────────────────────────────────
     st.markdown('<div class="section-title">📊 Key Metrics</div>', unsafe_allow_html=True)
@@ -348,13 +387,13 @@ def main():
             filtered_df.groupby("Subject")["Marks"]
             .mean().sort_values(ascending=False).reset_index()
         )
-        fig, ax = dark_fig(figsize=(7, 4))
+        fig, ax = adaptive_fig(figsize=(7, 4))
         palette  = ["#4f6eff", "#7c9cff", "#a78bfa", "#6ee7b7", "#fbbf24"]
         bars = ax.bar(
             avg_marks["Subject"], avg_marks["Marks"],
-            color=palette[:len(avg_marks)], edgecolor="#1a1e2c", linewidth=0.8
+            color=palette[:len(avg_marks)], edgecolor=(0.5, 0.5, 0.5, 0.2), linewidth=0.8
         )
-        ax.bar_label(bars, fmt="%.1f", padding=3, color="#c8cedf", fontsize=9)
+        ax.bar_label(bars, fmt="%.1f", padding=3, color="gray", fontsize=9)
         ax.set_xlabel("Subject", fontsize=9)
         ax.set_ylabel("Avg Marks", fontsize=9)
         ax.set_title("Avg Marks per Subject", fontsize=11, fontweight="bold")
@@ -366,17 +405,21 @@ def main():
     # ── 7b. Histogram: Marks Distribution ───────────────────────────
     with col_right:
         st.markdown("**Marks Distribution**")
-        fig, ax = dark_fig(figsize=(7, 4))
+        fig, ax = adaptive_fig(figsize=(7, 4))
         ax.hist(
             filtered_df["Marks"], bins=20,
-            color="#4f6eff", edgecolor="#1a1e2c", linewidth=0.6, alpha=0.9
+            color="#4f6eff", edgecolor=(0.5, 0.5, 0.5, 0.2), linewidth=0.6, alpha=0.9
         )
         ax.axvline(filtered_df["Marks"].mean(), color="#fbbf24", linewidth=1.8,
                    linestyle="--", label=f"Mean: {filtered_df['Marks'].mean():.1f}")
         ax.set_xlabel("Marks", fontsize=9)
         ax.set_ylabel("Number of Students", fontsize=9)
         ax.set_title("Marks Distribution", fontsize=11, fontweight="bold")
-        ax.legend(fontsize=8, facecolor="#1a1e2c", labelcolor="#9aa0b4")
+        
+        # Make legend transparent
+        legend = ax.legend(fontsize=8, labelcolor="gray")
+        legend.get_frame().set_alpha(0.0)
+        legend.get_frame().set_edgecolor("none")
         plt.tight_layout()
         st.pyplot(fig, use_container_width=True)
         plt.close(fig)
@@ -387,7 +430,7 @@ def main():
     # ── 7c. Scatter: Study Hours vs Marks ────────────────────────────
     with col_l2:
         st.markdown("**Study Hours vs Marks**")
-        fig, ax = dark_fig(figsize=(7, 4))
+        fig, ax = adaptive_fig(figsize=(7, 4))
         scatter_colors = {"Male": "#4f6eff", "Female": "#a78bfa"}
         for gender, grp in filtered_df.groupby("Gender"):
             ax.scatter(
@@ -406,7 +449,11 @@ def main():
         ax.set_xlabel("Study Hours", fontsize=9)
         ax.set_ylabel("Marks", fontsize=9)
         ax.set_title("Study Hours vs Marks", fontsize=11, fontweight="bold")
-        ax.legend(fontsize=8, facecolor="#1a1e2c", labelcolor="#9aa0b4")
+        
+        # Transparent legend
+        legend = ax.legend(fontsize=8, labelcolor="gray")
+        legend.get_frame().set_alpha(0.0)
+        legend.get_frame().set_edgecolor("none")
         plt.tight_layout()
         st.pyplot(fig, use_container_width=True)
         plt.close(fig)
@@ -416,15 +463,15 @@ def main():
         st.markdown("**Correlation Heatmap**")
         num_cols = ["Study_Hours", "Attendance", "Marks"]
         corr_matrix = filtered_df[num_cols].corr()
-        fig, ax = dark_fig(figsize=(7, 4))
+        fig, ax = adaptive_fig(figsize=(7, 4))
         sns.heatmap(
             corr_matrix, annot=True, fmt=".2f", ax=ax,
-            cmap="coolwarm", linewidths=0.5, linecolor="#1a1e2c",
+            cmap="coolwarm", linewidths=0.5, linecolor=(0.5, 0.5, 0.5, 0.2),
             cbar_kws={"shrink": 0.8},
-            annot_kws={"size": 10, "color": "white"},
+            annot_kws={"size": 10},
         )
         ax.set_title("Correlation Heatmap", fontsize=11, fontweight="bold")
-        ax.tick_params(colors="#9aa0b4", labelsize=9)
+        ax.tick_params(labelsize=9)
         plt.tight_layout()
         st.pyplot(fig, use_container_width=True)
         plt.close(fig)
@@ -434,8 +481,20 @@ def main():
     # ──────────────────────────────────────────────────────────────────
     # SECTION 8 ▸ Data Table + Download Button (Bonus)
     # ──────────────────────────────────────────────────────────────────
-    st.markdown('<div class="section-title">📋 Filtered Dataset</div>', unsafe_allow_html=True)
-    st.dataframe(filtered_df.reset_index(drop=True), use_container_width=True, hide_index=True)
+    st.markdown('<div class="section-title">📋 Filtered Dataset (<span style="color:#66ff99">🟩 Fixed Missing Values</span>)</div>', unsafe_allow_html=True)
+    
+    filtered_missing_mask = missing_mask.loc[filtered_df.index]
+    def style_fixed_missing(d):
+        df_style = pd.DataFrame('', index=d.index, columns=d.columns)
+        for col in d.columns:
+            if col in filtered_missing_mask.columns:
+                m = filtered_missing_mask[col]
+                # Highlight the fixed values in a distinct color (e.g. green)
+                df_style.loc[m, col] = 'background-color: #004d22; color: #66ff99'
+        return df_style
+
+    styled_filtered = filtered_df.style.apply(style_fixed_missing, axis=None)
+    st.dataframe(styled_filtered, use_container_width=True, hide_index=True)
 
     # Download filtered data as CSV
     csv_bytes = filtered_df.to_csv(index=False).encode("utf-8")
