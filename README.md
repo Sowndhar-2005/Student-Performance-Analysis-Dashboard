@@ -1,7 +1,7 @@
 # 🎓 Student Performance Analysis Dashboard
 
 <p align="center">
-  <img src="assets/banner.png" alt="Student Performance Dashboard Banner" width="100%"/>
+  <img src="assets/banner.png" alt="Student Performance Dashboard Banner" width="90%"/>
 </p>
 
 <p align="center">
@@ -177,21 +177,6 @@ streamlit run app.py
 ### 🎁 Bonus Features
 - **📂 Upload Custom CSV** from sidebar
 - **⬇️ Download Filtered Data** as CSV
-
----
-
-## 📝 Section-by-Section Explanation *(for Viva)*
-
-1. **Dataset Generation** — `generate_dataset()` uses NumPy to create 200 students with realistic correlations (more study hours → higher marks) + random noise
-2. **Data Cleaning** — `clean_data()` removes duplicates and fills NaN with column median (robust to outliers)
-3. **Sidebar Filters** — `st.multiselect()` lets users narrow data by gender/subject dynamically
-4. **KPI Metrics** — `st.metric()` shows count/mean stats on the filtered subset
-5. **Bar Chart** — `groupby("Subject")["Marks"].mean()` + Matplotlib `ax.bar()`
-6. **Histogram** — `ax.hist()` shows spread of marks with mean line
-7. **Scatter Plot** — Each point = 1 student; color = gender; dashed = trend line
-8. **Heatmap** — Seaborn `heatmap()` on `df.corr()` matrix
-9. **Linear Regression** — `sklearn.LinearRegression` fit on 80% data; MAE + R² evaluations
-10. **Prediction** — Slider inputs → `model.predict()` → grade label (A+ to F)
 
 ---
 
