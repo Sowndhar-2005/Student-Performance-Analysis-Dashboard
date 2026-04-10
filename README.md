@@ -1,7 +1,7 @@
 # 🎓 Student Performance Analysis Dashboard
 
 <p align="center">
-  <img src="assets/banner.png" alt="Student Performance Dashboard Banner" width="100%"/>
+  <img src="assets/dashboard_2.png" alt="Student Performance Dashboard" width="100%"/>
 </p>
 
 <p align="center">
@@ -73,6 +73,7 @@ flowchart TD
 
 ---
 
+
 ## 🗂️ Dataset Schema
 
 ```mermaid
@@ -109,8 +110,9 @@ fds/
 ├── requirements.txt    ← Python dependencies
 ├── README.md           ← Project documentation
 └── assets/
-    ├── banner.png      ← Project banner image
-    └── ml_workflow.png ← ML pipeline diagram
+    ├── ml_workflow.png ← ML pipeline diagram
+    ├── dashboard_view.png ← App dashboard view
+    └── dashboard_2.png ← Project banner image
 ```
 
 ---
@@ -150,6 +152,11 @@ streamlit run app.py
 - Cleaning report shown in expandable panel
 
 ### 📊 Dashboard
+
+<p align="center">
+  <img src="assets/dashboard_view.png" alt="Dashboard View" width="90%"/>
+</p>
+
 - Sidebar filters: **Gender** and **Subject**
 - KPI cards: Total Students · Avg Marks · Avg Study Hours · Avg Attendance
 
