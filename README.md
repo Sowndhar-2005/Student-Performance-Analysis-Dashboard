@@ -1,177 +1,200 @@
-# B23ADT302 FOUNDATIONS OF DATA SCIENCE
+# 🎓 Student Performance Analysis Dashboard
 
-> An interactive data science web application that analyzes student academic performance using machine learning, statistical visualizations, and a modern dark-mode UI.
+<p align="center">
+  <img src="assets/banner.png" alt="Student Performance Dashboard Banner" width="100%"/>
+</p>
 
----
+<p align="center">
+  <img src="https://img.shields.io/badge/Python-3.9+-blue?style=for-the-badge&logo=python&logoColor=white"/>
+  <img src="https://img.shields.io/badge/Streamlit-1.32+-FF4B4B?style=for-the-badge&logo=streamlit&logoColor=white"/>
+  <img src="https://img.shields.io/badge/Scikit--learn-ML-orange?style=for-the-badge&logo=scikit-learn&logoColor=white"/>
+  <img src="https://img.shields.io/badge/Pandas-Data-green?style=for-the-badge&logo=pandas&logoColor=white"/>
+  <img src="https://img.shields.io/badge/License-MIT-purple?style=for-the-badge"/>
+</p>
 
-## Features
-
-| Tab | Description |
-|-----|-------------|
-| **Dashboard** | KPI cards (total students, pass rate, avg score, avg study hours) + 3 summary charts |
-| **Data Explorer** | Paginated, filterable table of all 300 student records |
-| **Visualizations** | Interactive scatter plot, distribution histogram, and correlation heatmap |
-| **ML Model** | Random Forest classifier — accuracy metrics, feature importance, confusion matrix, and live prediction form |
-| **Insights** | 6 auto-generated key findings from the dataset |
-
----
-
-## Tech Stack
-
-| Layer | Technology |
-|-------|-----------|
-| Backend | Python 3.10+, Flask 3.x |
-| Data & ML | Pandas, NumPy, Scikit-learn (Random Forest) |
-| Frontend | Vanilla HTML5, CSS3, JavaScript (ES6+) |
-| Charts | Chart.js v4 |
-| Fonts | Inter, JetBrains Mono (Google Fonts) |
+<p align="center">
+  A complete, beginner-friendly <strong>Data Science mini project</strong> built with Python and Streamlit.<br/>
+  Analyze student data, visualize patterns, and predict marks — all in an interactive web UI.
+</p>
 
 ---
 
-## Project Structure
+## 📦 Tech Stack
+
+| Library | Purpose | Version |
+|---|---|---|
+| **Streamlit** | Interactive web dashboard UI | ≥ 1.32 |
+| **Pandas** | Data loading, cleaning, filtering | ≥ 2.0 |
+| **NumPy** | Numerical operations, dataset generation | ≥ 1.24 |
+| **Matplotlib** | Bar chart, histogram, scatter plot | ≥ 3.7 |
+| **Seaborn** | Correlation heatmap | ≥ 0.12 |
+| **Scikit-learn** | Linear Regression model | ≥ 1.3 |
+
+---
+
+## 🔄 Project Architecture
+
+```mermaid
+flowchart LR
+    A(📂 Raw CSV Data) --> B(🧹 Data Cleaning)
+    B --> C(🔍 Filter by Gender & Subject)
+    C --> D(📊 Dashboard & Charts)
+    C --> E(🤖 Train ML Model)
+    E --> F(🔮 Predict Marks)
+```
+
+---
+
+## 🤖 ML Pipeline
+
+<p align="center">
+  <img src="assets/ml_workflow.png" alt="ML Workflow Pipeline" width="90%"/>
+</p>
+
+```mermaid
+flowchart TD
+    A(📥 Study Hours + Attendance) --> B(🏋️ Train Linear Regression)
+    B --> C(📐 Evaluate — MAE and R²)
+    C --> D(🔮 Predict Marks)
+    D --> E(🏷️ Assign Grade A+ to F)
+```
+
+---
+
+## 📊 Visualizations Included
+
+```
+┌─────────────────────────┬────────────────────────────┐
+│  📊 Bar Chart           │  📈 Histogram               │
+│  Avg Marks per Subject  │  Marks Distribution         │
+├─────────────────────────┼────────────────────────────┤
+│  🔵 Scatter Plot        │  🌡️ Heatmap                 │
+│  Study Hours vs Marks   │  Correlation Matrix         │
+└─────────────────────────┴────────────────────────────┘
+```
+
+---
+
+## 🗂️ Dataset Schema
+
+```mermaid
+erDiagram
+    STUDENT {
+        string  Student_ID
+        string  Gender
+        string  Subject
+        float   Study_Hours
+        float   Attendance
+        float   Marks
+    }
+```
+
+---
+
+## 🏆 Grade Scale
+
+| Score Range | Grade | Label |
+|---|---|---|
+| 90 – 100 | 🏆 A+ | Outstanding |
+| 75 – 89  | 🌟 A  | Excellent |
+| 60 – 74  | 👍 B  | Good |
+| 50 – 59  | 📘 C  | Average |
+| < 50     | ⚠️ F  | Needs Improvement |
+
+---
+
+## 📁 Folder Structure
 
 ```
 fds/
-├── app.py              # Flask server — data generation, API endpoints, ML training
-├── requirements.txt    # Python dependencies
-├── README.md
-└── static/
-    ├── index.html      # Single-page application shell (5 tab panels)
-    ├── style.css       # Dark-mode design system
-    └── main.js         # All chart rendering, table logic, ML interactions
+├── app.py              ← Main Streamlit application (single file)
+├── requirements.txt    ← Python dependencies
+├── README.md           ← Project documentation
+└── assets/
+    ├── banner.png      ← Project banner image
+    └── ml_workflow.png ← ML pipeline diagram
 ```
 
 ---
 
-## Dataset
+## ⚙️ How to Run Locally
 
-The dataset is **synthetically generated** on server startup (no external files needed).
+### Step 1 — Install Python
+Make sure **Python 3.9+** is installed → https://python.org
 
-- **300 students** across 5 departments: CS, Math, Physics, Commerce, Biology
-- **12 features** per student:
-
-| Feature | Type | Range |
-|---------|------|-------|
-| `student_id` | String | STU0001–STU0300 |
-| `age` | Integer | 17–22 |
-| `gender` | Categorical | Male / Female |
-| `department` | Categorical | CS / Math / Physics / Commerce / Biology |
-| `study_hours` | Float | 0–12 h/day |
-| `attendance` | Float | 40–100% |
-| `prev_score` | Float | 20–100 |
-| `sleep_hours` | Float | 3–10 h/day |
-| `assignments` | Integer | 0–10 submitted |
-| `extracurricular` | Binary | 0 (No) / 1 (Yes) |
-| `final_score` | Float | 20–100 (target variable) |
-| `pass_fail` | Binary | 0 (Fail) / 1 (Pass, score ≥ 50) |
-
----
-
-## Machine Learning
-
-- **Algorithm:** Random Forest Classifier (100 estimators)
-- **Features used:** `study_hours`, `attendance`, `prev_score`, `sleep_hours`, `assignments`, `extracurricular`
-- **Train/Test split:** 80% / 20%
-- **Preprocessing:** StandardScaler normalization
-- **Typical accuracy:** ~88–92%
-
-The model is trained once at startup and exposed via a REST API for live predictions.
-
----
-
-## API Endpoints
-
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| `GET` | `/api/stats` | KPI stats and chart data for the dashboard |
-| `GET` | `/api/data` | Paginated student records (supports `page`, `limit`, `dept`, `gender`) |
-| `GET` | `/api/scatter` | Scatter plot data (supports `x`, `y` column params) |
-| `GET` | `/api/histogram` | Histogram distribution for any numeric column |
-| `GET` | `/api/correlation` | Full correlation matrix for numeric features |
-| `GET` | `/api/model` | Model accuracy, feature importances, confusion matrix |
-| `POST` | `/api/predict` | Live prediction — send student features, receive Pass/Fail + probabilities |
-| `GET` | `/` | Serves the frontend SPA |
-
-### Example: Live Prediction Request
-
+### Step 2 — Create Virtual Environment *(recommended)*
 ```bash
-curl -X POST http://127.0.0.1:5000/api/predict \
-  -H "Content-Type: application/json" \
-  -d '{
-    "study_hours": 7,
-    "attendance": 85,
-    "prev_score": 72,
-    "sleep_hours": 7.5,
-    "assignments": 9,
-    "extracurricular": 1
-  }'
+python -m venv .venv
+.venv\Scripts\activate        # Windows
+# source .venv/bin/activate   # macOS / Linux
 ```
 
-**Response:**
-```json
-{
-  "prediction": "Pass",
-  "probability_pass": 94.2,
-  "probability_fail": 5.8
-}
-```
-
----
-
-## Getting Started
-
-### Prerequisites
-
-- Python 3.10 or higher
-- pip
-
-### Installation
-
+### Step 3 — Install Dependencies
 ```bash
-# 1. Clone or navigate to the project
-cd fds
-
-# 2. (Optional) Create a virtual environment
-python -m venv venv
-venv\Scripts\activate      # Windows
-# source venv/bin/activate # macOS/Linux
-
-# 3. Install dependencies
 pip install -r requirements.txt
 ```
 
-### Run
-
+### Step 4 — Run the App 🚀
 ```bash
-python app.py
+streamlit run app.py
 ```
 
-Open your browser at **http://127.0.0.1:5000**
+> The dashboard opens automatically at **http://localhost:8501**
 
 ---
 
-## Dependencies
+## ✨ Features
 
-```
-flask>=3.0.0
-pandas>=2.0.0
-numpy>=1.24.0
-scikit-learn>=1.3.0
-```
+### 🧹 Data Processing
+- Auto-generates 200+ realistic student records
+- Handles **missing values** (filled with median)
+- Removes **duplicate rows**
+- Cleaning report shown in expandable panel
+
+### 📊 Dashboard
+- Sidebar filters: **Gender** and **Subject**
+- KPI cards: Total Students · Avg Marks · Avg Study Hours · Avg Attendance
+
+### 📈 Visualizations
+
+| Chart | Description |
+|---|---|
+| **Bar Chart** | Average marks per subject |
+| **Histogram** | Marks distribution with mean line |
+| **Scatter Plot** | Study Hours vs Marks with gender colors & trend line |
+| **Heatmap** | Correlation matrix of numeric features |
+
+### 🤖 Machine Learning
+- **Linear Regression** (Scikit-learn)
+- Features: `Study_Hours` + `Attendance` → Target: `Marks`
+- Metrics: **MAE** and **R²** score displayed in UI
+
+### 🔮 Prediction UI
+- Input Study Hours (slider 0–12)
+- Input Attendance (slider 40–100%)
+- Click **Predict Marks** → shows predicted score + grade badge
+
+### 🎁 Bonus Features
+- **📂 Upload Custom CSV** from sidebar
+- **⬇️ Download Filtered Data** as CSV
 
 ---
 
-## Design Highlights
+## 📝 Section-by-Section Explanation *(for Viva)*
 
-- **Dark-mode first** — `#0a0b0f` background with layered card surfaces
-- **Accent palette** — Indigo (`#6366f1`) + Violet (`#8b5cf6`) gradient system
-- **Animated KPI counters** — numbers animate from 0 on load
-- **Interactive heatmap** — color-coded correlation matrix with hover effects
-- **Live ML predictor** — fill inputs → instant pass/fail probability result
-- **Smooth tab transitions** — fade + slide-up animation between panels
+1. **Dataset Generation** — `generate_dataset()` uses NumPy to create 200 students with realistic correlations (more study hours → higher marks) + random noise
+2. **Data Cleaning** — `clean_data()` removes duplicates and fills NaN with column median (robust to outliers)
+3. **Sidebar Filters** — `st.multiselect()` lets users narrow data by gender/subject dynamically
+4. **KPI Metrics** — `st.metric()` shows count/mean stats on the filtered subset
+5. **Bar Chart** — `groupby("Subject")["Marks"].mean()` + Matplotlib `ax.bar()`
+6. **Histogram** — `ax.hist()` shows spread of marks with mean line
+7. **Scatter Plot** — Each point = 1 student; color = gender; dashed = trend line
+8. **Heatmap** — Seaborn `heatmap()` on `df.corr()` matrix
+9. **Linear Regression** — `sklearn.LinearRegression` fit on 80% data; MAE + R² evaluations
+10. **Prediction** — Slider inputs → `model.predict()` → grade label (A+ to F)
 
 ---
 
-## License
-
-MIT — free to use, modify, and distribute.
+<p align="center">
+  Built with ❤️ for <strong>Foundations of Data Science</strong> · College Submission Project
+</p>
