@@ -1,7 +1,7 @@
 # 🎓 Student Performance Analysis Dashboard
 
 <p align="center">
-  <img src="assets/banner.png" alt="Student Performance Dashboard Banner" width="90%" height="220px" style="object-fit:cover; border-radius:12px;"/>
+  <img src="assets/banner.png" alt="Student Performance Dashboard Banner" width="100%"/>
 </p>
 
 <p align="center">
