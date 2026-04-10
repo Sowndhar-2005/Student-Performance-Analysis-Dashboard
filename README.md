@@ -48,7 +48,7 @@ flowchart LR
 ## 🤖 ML Pipeline
 
 <p align="center">
-  <img src="assets/ml_workflow.png" alt="ML Workflow Pipeline" width="90%"/>
+  <img src="assets/workflow_diagram.png" alt="ML Workflow Pipeline" width="90%"/>
 </p>
 
 ```mermaid
@@ -63,13 +63,9 @@ flowchart TD
 
 ## 📊 Visualizations Included
 
-| 📊 Bar Chart | 📈 Histogram |
-|---|---|
-| Average Marks per Subject | Marks Distribution |
-
-| 🔵 Scatter Plot | 🌡️ Heatmap |
-|---|---|
-| Study Hours vs Marks | Correlation Matrix |
+| 📊 Bar Chart | 📈 Histogram | 🔵 Scatter Plot | 🌡️ Heatmap |
+|---|---|---|---|
+| Average Marks per Subject | Marks Distribution | Study Hours vs Marks | Correlation Matrix |
 
 ---
 
@@ -110,7 +106,7 @@ fds/
 ├── requirements.txt    ← Python dependencies
 ├── README.md           ← Project documentation
 └── assets/
-    ├── ml_workflow.png ← ML pipeline diagram
+    ├── workflow_diagram.png ← ML pipeline diagram
     ├── dashboard_view.png ← App dashboard view
     └── dashboard_2.png ← Project banner image
 ```
