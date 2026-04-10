@@ -63,15 +63,13 @@ flowchart TD
 
 ## 📊 Visualizations Included
 
-```
-┌─────────────────────────┬────────────────────────────┐
-│  📊 Bar Chart           │  📈 Histogram               │
-│  Avg Marks per Subject  │  Marks Distribution         │
-├─────────────────────────┼────────────────────────────┤
-│  🔵 Scatter Plot        │  🌡️ Heatmap                 │
-│  Study Hours vs Marks   │  Correlation Matrix         │
-└─────────────────────────┴────────────────────────────┘
-```
+| 📊 Bar Chart | 📈 Histogram |
+|---|---|
+| Average Marks per Subject | Marks Distribution |
+
+| 🔵 Scatter Plot | 🌡️ Heatmap |
+|---|---|
+| Study Hours vs Marks | Correlation Matrix |
 
 ---
 
