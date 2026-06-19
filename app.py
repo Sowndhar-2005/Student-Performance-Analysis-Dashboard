@@ -203,6 +203,14 @@ def clean_data(df: pd.DataFrame) -> tuple[pd.DataFrame, dict, pd.DataFrame]:
       2. Fill missing Marks with column median
     Returns cleaned DataFrame, a dict of cleaning stats, and a missing mask.
     """
+    # Replace infinite values with NaN
+    df = df.replace([np.inf, -np.inf], np.nan)
+
+    # Ensure key numeric columns are properly typed (handling string numbers/errors in uploads)
+    for col in ["Study_Hours", "Attendance", "Marks"]:
+        if col in df.columns:
+            df[col] = pd.to_numeric(df[col], errors='coerce')
+
     raw_shape = df.shape
     dup_count = df.duplicated().sum()
     missing_count = df.isnull().sum().sum()
@@ -213,7 +221,11 @@ def clean_data(df: pd.DataFrame) -> tuple[pd.DataFrame, dict, pd.DataFrame]:
     # Fill numeric nulls with their respective median
     num_cols = df.select_dtypes(include=np.number).columns
     for col in num_cols:
-        df[col].fillna(df[col].median(), inplace=True)
+        median_val = df[col].median()
+        # Fallback if median is NaN (e.g. if the entire column is empty/NaN)
+        if pd.isna(median_val):
+            median_val = 0.0
+        df[col] = df[col].fillna(median_val)
 
     stats = {
         "raw_rows"     : raw_shape[0],
