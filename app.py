@@ -200,7 +200,8 @@ def clean_data(df: pd.DataFrame) -> tuple[pd.DataFrame, dict, pd.DataFrame]:
     """
     Clean the raw dataset:
       1. Remove duplicate rows
-      2. Fill missing Marks with column median
+      2. Fill missing Marks/numerical columns with column median
+      3. Fill missing categorical values with 'Unknown'
     Returns cleaned DataFrame, a dict of cleaning stats, and a missing mask.
     """
     # Replace infinite values with NaN
@@ -213,10 +214,18 @@ def clean_data(df: pd.DataFrame) -> tuple[pd.DataFrame, dict, pd.DataFrame]:
 
     raw_shape = df.shape
     dup_count = df.duplicated().sum()
-    missing_count = df.isnull().sum().sum()
 
+    # Drop duplicates
     df = df.drop_duplicates().reset_index(drop=True)
+    
+    # Capture missing mask and counts after conversions but before filling
     missing_mask = df.isnull()
+    missing_count = missing_mask.sum().sum()
+
+    # Ensure key categorical/string columns are filled and cast to string to avoid comparison/sorting errors
+    for col in ["Student_ID", "Gender", "Subject"]:
+        if col in df.columns:
+            df[col] = df[col].fillna("Unknown").astype(str)
     
     # Fill numeric nulls with their respective median
     num_cols = df.select_dtypes(include=np.number).columns
@@ -226,6 +235,9 @@ def clean_data(df: pd.DataFrame) -> tuple[pd.DataFrame, dict, pd.DataFrame]:
         if pd.isna(median_val):
             median_val = 0.0
         df[col] = df[col].fillna(median_val)
+
+    # Catch-all fallback for any other columns
+    df = df.fillna("Unknown")
 
     stats = {
         "raw_rows"     : raw_shape[0],
